@@ -1,0 +1,100 @@
+package com.example.mygithubuser.viewmodel
+
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import com.example.mygithubuser.Event
+import com.example.mygithubuser.api.ApiConfig
+import com.example.mygithubuser.response.DetailUserResponse
+import com.example.mygithubuser.response.ItemsItem
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
+class DetailUserViewModel : ViewModel() {
+
+    private val _detailUser = MutableLiveData<DetailUserResponse>()
+    val detailUser: LiveData<DetailUserResponse> = _detailUser
+
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
+    private val _listFollowing = MutableLiveData<List<ItemsItem>>()
+    val listFollowing: LiveData<List<ItemsItem>> = _listFollowing
+
+    private val _listFollowers = MutableLiveData<List<ItemsItem>>()
+    val listFollowers: LiveData<List<ItemsItem>> = _listFollowers
+
+    private val _toastMessage = MutableLiveData<Event<String>>()
+    val toastMessage: LiveData<Event<String>> = _toastMessage
+
+    fun findDetailUser(username: String) {
+        _isLoading.value = true
+        val client = ApiConfig.getApiService().getDetailUser(username)
+        client.enqueue(object : Callback<DetailUserResponse> {
+            override fun onResponse(
+                call: Call<DetailUserResponse>,
+                response: Response<DetailUserResponse>
+            ) {
+                _isLoading.value = false
+                if (response.isSuccessful) {
+                    _detailUser.value = response.body()
+                } else {
+                    _toastMessage.value = Event("onFailure: ${response.message()}")
+                }
+            }
+
+            override fun onFailure(call: Call<DetailUserResponse>, t: Throwable) {
+                _isLoading.value = false
+                _toastMessage.value = Event("onFailure: ${t.message.toString()}")
+            }
+        })
+    }
+
+    fun findFollowers(username: String) {
+        _isLoading.value = true
+        val client = ApiConfig.getApiService().getFollowers(username)
+        client.enqueue(object : Callback<List<ItemsItem>> {
+            override fun onResponse(
+                call: Call<List<ItemsItem>>,
+                response: Response<List<ItemsItem>>
+            ) {
+                _isLoading.value = false
+                if (response.isSuccessful) {
+                    _listFollowers.value = response.body()
+                } else {
+                    _toastMessage.value = Event("Followers tidak ditemukan")
+                }
+            }
+
+            override fun onFailure(call: Call<List<ItemsItem>>, t: Throwable) {
+                _isLoading.value = false
+                _toastMessage.value = Event("onFailure: ${t.message.toString()}")
+            }
+        })
+    }
+
+    fun findFollowing(username: String) {
+        _isLoading.value = true
+        val client = ApiConfig.getApiService().getFollowing(username)
+        client.enqueue(object : Callback<List<ItemsItem>> {
+            override fun onResponse(
+                call: Call<List<ItemsItem>>,
+                response: Response<List<ItemsItem>>
+            ) {
+                _isLoading.value = false
+                if (response.isSuccessful) {
+                    _listFollowing.value = response.body()
+                } else {
+                    _toastMessage.value = Event("Following tidak ditemukan")
+                }
+            }
+
+            override fun onFailure(call: Call<List<ItemsItem>>, t: Throwable) {
+                _isLoading.value = false
+                _toastMessage.value = Event("onFailure: ${t.message.toString()}")
+            }
+        })
+    }
+}
