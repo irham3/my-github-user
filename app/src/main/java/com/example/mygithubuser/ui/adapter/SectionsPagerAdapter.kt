@@ -1,10 +1,10 @@
-package com.example.mygithubuser.adapter
+package com.example.mygithubuser.ui.adapter
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.example.mygithubuser.fragment.DetailUserFollowFragment
+import com.example.mygithubuser.ui.fragment.DetailUserFollowFragment
 
 class SectionsPagerAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
     lateinit var username: String

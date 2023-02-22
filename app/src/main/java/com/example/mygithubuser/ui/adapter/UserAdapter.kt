@@ -1,4 +1,4 @@
-package com.example.mygithubuser.adapter
+package com.example.mygithubuser.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.mygithubuser.R
-import com.example.mygithubuser.response.ItemsItem
+import com.example.mygithubuser.data.remote.response.ItemsItem
 
 class UserAdapter (private val listUser: List<ItemsItem>) : RecyclerView.Adapter<UserAdapter.ViewHolder>() {
     private lateinit var onItemClickCallback: OnItemClickCallback

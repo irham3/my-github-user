@@ -1,4 +1,4 @@
-package com.example.mygithubuser
+package com.example.mygithubuser.utils
 
 open class Event<out T>(private val content: T) {
 

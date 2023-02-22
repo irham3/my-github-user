@@ -1,4 +1,4 @@
-package com.example.mygithubuser.fragment
+package com.example.mygithubuser.ui.fragment
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -7,10 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.mygithubuser.adapter.UserAdapter
+import com.example.mygithubuser.ui.adapter.UserAdapter
 import com.example.mygithubuser.databinding.FragmentDetailUserFollowBinding
-import com.example.mygithubuser.response.ItemsItem
-import com.example.mygithubuser.viewmodel.DetailUserViewModel
+import com.example.mygithubuser.data.remote.response.ItemsItem
+import com.example.mygithubuser.ui.viewmodel.DetailUserViewModel
 
 class DetailUserFollowFragment : Fragment() {
     private lateinit var binding: FragmentDetailUserFollowBinding

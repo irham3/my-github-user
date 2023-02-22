@@ -1,4 +1,4 @@
-package com.example.mygithubuser.api
+package com.example.mygithubuser.data.remote.retrofit
 
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient

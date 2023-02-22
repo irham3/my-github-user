@@ -1,4 +1,4 @@
-package com.example.mygithubuser
+package com.example.mygithubuser.ui.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -8,10 +8,11 @@ import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.example.mygithubuser.adapter.SectionsPagerAdapter
+import com.example.mygithubuser.R
+import com.example.mygithubuser.ui.adapter.SectionsPagerAdapter
 import com.example.mygithubuser.databinding.ActivityDetailUserBinding
-import com.example.mygithubuser.response.DetailUserResponse
-import com.example.mygithubuser.viewmodel.DetailUserViewModel
+import com.example.mygithubuser.data.remote.response.DetailUserResponse
+import com.example.mygithubuser.ui.viewmodel.DetailUserViewModel
 import com.google.android.material.tabs.TabLayoutMediator
 
 class DetailUserActivity : AppCompatActivity() {
