@@ -6,21 +6,29 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.mygithubuser.R
+import com.example.mygithubuser.data.local.entity.FavouriteUser
 import com.example.mygithubuser.ui.adapter.SectionsPagerAdapter
 import com.example.mygithubuser.databinding.ActivityDetailUserBinding
 import com.example.mygithubuser.data.remote.response.DetailUserResponse
 import com.example.mygithubuser.ui.viewmodel.DetailUserViewModel
+import com.example.mygithubuser.ui.viewmodel.ViewModelFactory
 import com.google.android.material.tabs.TabLayoutMediator
 
 class DetailUserActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailUserBinding
-    private val detailUserViewModel by viewModels<DetailUserViewModel>()
+    private lateinit var favUser: FavouriteUser
+    private var isFavourite = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val detailUserViewModel: DetailUserViewModel by viewModels {
+            ViewModelFactory.getInstance(application)
+        }
+
         binding = ActivityDetailUserBinding.inflate(layoutInflater)
         setContentView(binding.root)
         supportActionBar?.title = getString(R.string.detail_user_title)
@@ -37,7 +45,20 @@ class DetailUserActivity : AppCompatActivity() {
 
         detailUserViewModel.detailUser.observe(this) {detailData ->
             showDetailUserData(detailData)
+            favUser = FavouriteUser(detailData.login.toString(), detailData.avatarUrl)
         }
+
+        detailUserViewModel.getFavouriteByUsername(username!!).observe(this) { listFavUser ->
+            isFavourite = listFavUser.isNotEmpty()
+            setFabIcon(isFavourite)
+            binding.fabAddToFavourites.setOnClickListener {
+                if(isFavourite)
+                    detailUserViewModel.removeFromFavourites(favUser)
+                else
+                    detailUserViewModel.addToFavourites(favUser)
+            }
+        }
+
 
         detailUserViewModel.toastMessage.observe(this) {
             it.getContentIfNotHandled()?.let { toastMessage ->
@@ -46,11 +67,13 @@ class DetailUserActivity : AppCompatActivity() {
         }
 
         val sectionsPagerAdapter = SectionsPagerAdapter(this)
-        sectionsPagerAdapter.username = username?:""
+        sectionsPagerAdapter.username = username
         binding.viewPager.adapter = sectionsPagerAdapter
+
         TabLayoutMediator(binding.tabs, binding.viewPager) {tab, position ->
             tab.text = resources.getString(TAB_TITLES[position])
         }.attach()
+
     }
 
     private fun showDetailUserData(detailData: DetailUserResponse?) {
@@ -69,6 +92,16 @@ class DetailUserActivity : AppCompatActivity() {
     private fun showLoading(isLoading: Boolean) {
         binding.layoutMainDetailUser.visibility = if (isLoading) View.GONE else View.VISIBLE
         binding.progressBarDetailUser.visibility = if (isLoading) View.VISIBLE else View.GONE
+    }
+
+    private fun setFabIcon(isFavourite: Boolean) {
+        if (isFavourite) {
+            binding.fabAddToFavourites.setImageDrawable(ContextCompat
+                .getDrawable(binding.fabAddToFavourites.context, R.drawable.ic_favorite_24))
+        } else {
+            binding.fabAddToFavourites.setImageDrawable(ContextCompat
+                .getDrawable(binding.fabAddToFavourites.context, R.drawable.ic_favorite_border_24))
+        }
     }
 
     companion object {

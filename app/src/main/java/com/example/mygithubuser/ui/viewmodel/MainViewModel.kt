@@ -40,8 +40,6 @@ class MainViewModel: ViewModel() {
                         _toastMessage.value = Event("Username Github tidak ditemukan")
                     else
                         _listUser.value = response.body()?.items!!
-                } else {
-                    _toastMessage.value = Event("onFailure: ${response.message()}")
                 }
             }
 

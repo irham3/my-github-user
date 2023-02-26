@@ -3,15 +3,19 @@ package com.example.mygithubuser.ui.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.mygithubuser.data.FavouriteUserRepository
+import com.example.mygithubuser.data.local.entity.FavouriteUser
 import com.example.mygithubuser.data.remote.retrofit.ApiConfig
 import com.example.mygithubuser.data.remote.response.DetailUserResponse
 import com.example.mygithubuser.data.remote.response.ItemsItem
 import com.example.mygithubuser.utils.Event
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class DetailUserViewModel : ViewModel() {
+class DetailUserViewModel(private val favUserRepository: FavouriteUserRepository) : ViewModel() {
 
     private val _detailUser = MutableLiveData<DetailUserResponse>()
     val detailUser: LiveData<DetailUserResponse> = _detailUser
@@ -27,6 +31,7 @@ class DetailUserViewModel : ViewModel() {
 
     private val _toastMessage = MutableLiveData<Event<String>>()
     val toastMessage: LiveData<Event<String>> = _toastMessage
+
 
     fun findDetailUser(username: String) {
         _isLoading.value = true
@@ -96,4 +101,20 @@ class DetailUserViewModel : ViewModel() {
             }
         })
     }
+
+    fun addToFavourites(favUsers: FavouriteUser) {
+        viewModelScope.launch {
+            favUserRepository.addToFavourites(favUsers)
+        }
+    }
+
+    fun removeFromFavourites(favUsers: FavouriteUser) {
+        viewModelScope.launch {
+            favUserRepository.removeFromFavourites(favUsers)
+        }
+    }
+
+    fun getFavouriteByUsername(username: String): LiveData<List<FavouriteUser>> =
+        favUserRepository.getFavoriteUserByUsername(username)
+
 }

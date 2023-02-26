@@ -87,8 +87,7 @@
                 android:id="@+id/tabs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#00FFFFFF"
-                app:tabTextColor="@android:color/black" />
+                android:background="#00FFFFFF" />
 
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/view_pager"
@@ -98,13 +97,15 @@
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/fab_add_to_favourites"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:tint="@android:color/white"
+        app:backgroundTint="@color/black"
         android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
         android:src="@drawable/ic_favorite_border_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:ignore="ContentDescription" />
+        android:contentDescription="@string/fab_user_favourites" />
 </androidx.constraintlayout.widget.ConstraintLayout>
