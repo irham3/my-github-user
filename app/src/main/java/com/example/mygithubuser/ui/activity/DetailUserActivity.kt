@@ -59,7 +59,6 @@ class DetailUserActivity : AppCompatActivity() {
             }
         }
 
-
         detailUserViewModel.toastMessage.observe(this) {
             it.getContentIfNotHandled()?.let { toastMessage ->
                 Toast.makeText(this@DetailUserActivity, toastMessage, Toast.LENGTH_SHORT).show()

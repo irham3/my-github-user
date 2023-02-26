@@ -26,9 +26,11 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun launchMainActivity() {
-        val intent = Intent(this@SplashActivity, MainActivity::class.java)
+        val intent = Intent(this, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent)
-        finish()
+        this.finish()
+
     }
 
     private fun checkDarkMode() {

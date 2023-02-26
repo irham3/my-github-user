@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <style name="Theme.MyGithubUser.SplashTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="android:windowSplashScreenBackground">@drawable/bg_gradient</item>
-        <item name="android:windowSplashScreenAnimatedIcon">@drawable/app_logo</item>
-        <item name="android:windowSplashScreenAnimationDuration">1000</item>
-    </style>
-</resources>

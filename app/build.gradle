@@ -20,7 +20,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "GITHUB_BASE_URL", '"https://api.github.com/"')
-        buildConfigField("String", "GITHUB_API_KEY", '"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"')
+        buildConfigField("String", "GITHUB_API_KEY", '"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"')
     }
 
     buildTypes {
@@ -42,9 +42,6 @@ android {
 }
 
 dependencies {
-
-    implementation("androidx.core:core-splashscreen:1.0.0")
-
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.8.0'
@@ -67,9 +64,6 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.5.1"
     implementation "androidx.room:room-ktx:2.5.0"
-
-    testImplementation 'org.mockito:mockito-core:4.4.0'
-    testImplementation 'org.mockito:mockito-inline:4.4.0'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
