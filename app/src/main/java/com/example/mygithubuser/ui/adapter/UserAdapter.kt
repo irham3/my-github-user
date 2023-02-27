@@ -1,46 +1,60 @@
 package com.example.mygithubuser.ui.adapter
 
+import android.content.Intent
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
-import com.example.mygithubuser.R
 import com.example.mygithubuser.data.remote.response.ItemsItem
+import com.example.mygithubuser.databinding.ItemUserBinding
+import com.example.mygithubuser.ui.activity.DetailUserActivity
+import com.example.mygithubuser.ui.activity.DetailUserActivity.Companion.EXTRA_USERNAME
 
-class UserAdapter (private val listUser: List<ItemsItem>) : RecyclerView.Adapter<UserAdapter.ViewHolder>() {
-    private lateinit var onItemClickCallback: OnItemClickCallback
-
-    interface OnItemClickCallback {
-        fun onItemClicked(username: String)
+class UserAdapter : ListAdapter<ItemsItem, UserAdapter.ViewHolder>(DIFF_UTIL) {
+    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
+        return ViewHolder(
+            ItemUserBinding.inflate(
+                LayoutInflater.from(viewGroup.context), viewGroup, false
+            )
+        )
+    }
+    override fun onBindViewHolder(view: ViewHolder, position: Int) = with(view){
+        bind(getItem(position))
     }
 
-    fun setOnItemClickCallback(onItemClickCallback: OnItemClickCallback) {
-        this.onItemClickCallback = onItemClickCallback
+    // merepresentasikan setiap item pada daftar pengguna
+    inner class ViewHolder(private val binding: ItemUserBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(user: ItemsItem) {
+            binding.apply {
+                tvUserUsername.text = user.login
+            }
+
+            Glide.with(itemView.context)
+                .load(user.avatarUrl)
+                .into(binding.imgUserPhoto)
+
+            itemView.setOnClickListener {
+                itemView.context.startActivity(
+                    Intent(itemView.context, DetailUserActivity::class.java)
+                        .putExtra(EXTRA_USERNAME, user.login)
+                )
+            }
+        }
     }
 
-    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int) =
-        ViewHolder(LayoutInflater.from(viewGroup.context).inflate(R.layout.item_user, viewGroup, false))
+    companion object {
+        private val DIFF_UTIL = object : DiffUtil.ItemCallback<ItemsItem>() {
+            override fun areItemsTheSame(oldItem: ItemsItem, newItem: ItemsItem): Boolean {
+                return oldItem.login == newItem.login
+            }
 
-    override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        val user = listUser[position]
-        Glide.with(viewHolder.itemView.context)
-            .load(user.avatarUrl)
-            .apply(RequestOptions().override(55, 55))
-            .into(viewHolder.imgUserPhoto)
-
-        viewHolder.tvUserUsername.text = user.login
-        viewHolder.itemView.setOnClickListener{onItemClickCallback.onItemClicked(user.login?:"")}
-    }
-
-    override fun getItemCount() = listUser.size
-
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val imgUserPhoto: ImageView = view.findViewById(R.id.img_user_photo)
-        val tvUserUsername: TextView = view.findViewById(R.id.tv_user_username)
+            override fun areContentsTheSame(oldItem: ItemsItem, newItem: ItemsItem): Boolean {
+                return oldItem == newItem
+            }
+        }
     }
 
 }

@@ -1,22 +1,29 @@
 package com.example.mygithubuser.ui.fragment
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mygithubuser.ui.adapter.UserAdapter
-import com.example.mygithubuser.data.remote.response.ItemsItem
 import com.example.mygithubuser.databinding.FragmentUserFollowBinding
-import com.example.mygithubuser.ui.activity.DetailUserActivity
 import com.example.mygithubuser.ui.viewmodel.DetailUserViewModel
 import com.example.mygithubuser.ui.viewmodel.ViewModelFactory
+import com.example.mygithubuser.data.Result
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class UserFollowFragment : Fragment() {
     private lateinit var binding: FragmentUserFollowBinding
+    private lateinit var userAdapter: UserAdapter
+    private val detailUserViewModel: DetailUserViewModel by viewModels {
+        ViewModelFactory.getInstance(requireActivity())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,58 +35,63 @@ class UserFollowFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        userAdapter = UserAdapter()
 
-        val detailUserViewModel: DetailUserViewModel by viewModels {
-            ViewModelFactory.getInstance(requireActivity())
-        }
-
-        binding.rvFollow.layoutManager = LinearLayoutManager(requireActivity())
+        showRecyclerView()
         val position = arguments?.getInt(ARG_POSITION, 0)
         val username = arguments?.getString(ARG_USERNAME)
 
-        if (position == 1 && detailUserViewModel.listFollowers.value == null) {
-            detailUserViewModel.findFollowers(username?:"")
-
-            detailUserViewModel.listFollowers.observe(viewLifecycleOwner) {
-                detailUserViewModel.listFollowers.value?.let { setUsersData(it) }
+        if (position == 1) {
+            // Followers Tab
+            CoroutineScope(Dispatchers.Main).launch {
+                detailUserViewModel.findFollowers((username.toString())).observe(viewLifecycleOwner) { result ->
+                    when(result) {
+                        is Result.Loading -> {
+                            binding.progressBarDetailFragmentUser.visibility = View.VISIBLE
+                        }
+                        is Result.Success -> {
+                            binding.progressBarDetailFragmentUser.visibility = View.GONE
+                            val usersData = result.data
+                            userAdapter.submitList(usersData)
+                        }
+                        is Result.Error -> {
+                            binding.progressBarDetailFragmentUser.visibility = View.GONE
+                            Toast.makeText(requireActivity(), result.message, Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
             }
 
-            detailUserViewModel.isLoading.observe(viewLifecycleOwner) {
-                showLoading(it)
-            }
-        } else if(position == 2 && detailUserViewModel.listFollowing.value == null) {
-            detailUserViewModel.findFollowing(username?:"")
-
-            detailUserViewModel.listFollowing.observe(viewLifecycleOwner) {
-                detailUserViewModel.listFollowing.value?.let { setUsersData(it) }
-            }
-
-            detailUserViewModel.isLoading.observe(viewLifecycleOwner) {
-                showLoading(it)
+        } else if(position == 2) {
+            // Following Tab
+            CoroutineScope(Dispatchers.Main).launch {
+                detailUserViewModel.findFollowing((username.toString())).observe(viewLifecycleOwner) { result ->
+                    when(result) {
+                        is Result.Loading -> {
+                            binding.progressBarDetailFragmentUser.visibility = View.VISIBLE
+                        }
+                        is Result.Success -> {
+                            binding.progressBarDetailFragmentUser.visibility = View.GONE
+                            val usersData = result.data
+                            userAdapter.submitList(usersData)
+                        }
+                        is Result.Error -> {
+                            binding.progressBarDetailFragmentUser.visibility = View.GONE
+                            Toast.makeText(requireActivity(), result.message, Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
             }
         }
     }
-
-    private fun setUsersData(listUser: List<ItemsItem>) {
-        val adapter = UserAdapter(listUser)
-        binding.rvFollow.adapter = adapter
-        adapter.setOnItemClickCallback(object : UserAdapter.OnItemClickCallback {
-            override fun onItemClicked(username: String) {
-                showSelectedUser(username)
-            }
-        })
-    }
-
-    private fun showLoading(isLoading: Boolean) {
-        binding.rvFollow.visibility = if (isLoading) View.GONE else View.VISIBLE
-        binding.progressBarDetailFragmentUser.visibility = if (isLoading) View.VISIBLE else View.GONE
-    }
-
-    private fun showSelectedUser(username: String) {
-        val moveToDetailIntent = Intent(requireActivity(), DetailUserActivity::class.java)
-        moveToDetailIntent.putExtra(DetailUserActivity.EXTRA_USERNAME, username)
-
-        startActivity(moveToDetailIntent)
+    private fun showRecyclerView() {
+        val layoutManager = LinearLayoutManager(requireActivity())
+        binding.rvFollow.layoutManager = layoutManager
+        binding.rvFollow.apply {
+            visibility = View.VISIBLE
+            adapter = userAdapter
+            addItemDecoration(DividerItemDecoration(requireActivity(), layoutManager.orientation))
+        }
     }
 
     companion object {

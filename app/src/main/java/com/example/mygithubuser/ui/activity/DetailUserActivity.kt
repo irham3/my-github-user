@@ -10,45 +10,37 @@ import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.mygithubuser.R
+import com.example.mygithubuser.data.Result
 import com.example.mygithubuser.data.local.entity.FavouriteUser
 import com.example.mygithubuser.ui.adapter.SectionsPagerAdapter
 import com.example.mygithubuser.databinding.ActivityDetailUserBinding
-import com.example.mygithubuser.data.remote.response.DetailUserResponse
 import com.example.mygithubuser.ui.viewmodel.DetailUserViewModel
 import com.example.mygithubuser.ui.viewmodel.ViewModelFactory
 import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class DetailUserActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailUserBinding
     private lateinit var favUser: FavouriteUser
+    private lateinit var username: String
     private var isFavourite = false
+    private val detailUserViewModel: DetailUserViewModel by viewModels {
+        ViewModelFactory.getInstance(application)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val detailUserViewModel: DetailUserViewModel by viewModels {
-            ViewModelFactory.getInstance(application)
-        }
-
         binding = ActivityDetailUserBinding.inflate(layoutInflater)
         setContentView(binding.root)
         supportActionBar?.title = getString(R.string.detail_user_title)
 
-        val username = intent.getStringExtra(EXTRA_USERNAME)
+        username = intent.getStringExtra(EXTRA_USERNAME).toString()
 
-        if(detailUserViewModel.detailUser.value == null) {
-            detailUserViewModel.findDetailUser(username?:"")
-        }
+        showDetailUser()
 
-        detailUserViewModel.isLoading.observe(this) {
-            showLoading(it)
-        }
-
-        detailUserViewModel.detailUser.observe(this) {detailData ->
-            showDetailUserData(detailData)
-            favUser = FavouriteUser(detailData.login.toString(), detailData.avatarUrl)
-        }
-
-        detailUserViewModel.getFavouriteByUsername(username!!).observe(this) { listFavUser ->
+        detailUserViewModel.getFavouriteByUsername(username).observe(this@DetailUserActivity) { listFavUser ->
             isFavourite = listFavUser.isNotEmpty()
             setFabIcon(isFavourite)
             binding.fabAddToFavourites.setOnClickListener {
@@ -59,11 +51,6 @@ class DetailUserActivity : AppCompatActivity() {
             }
         }
 
-        detailUserViewModel.toastMessage.observe(this) {
-            it.getContentIfNotHandled()?.let { toastMessage ->
-                Toast.makeText(this@DetailUserActivity, toastMessage, Toast.LENGTH_SHORT).show()
-            }
-        }
 
         val sectionsPagerAdapter = SectionsPagerAdapter(this)
         sectionsPagerAdapter.username = username
@@ -75,22 +62,37 @@ class DetailUserActivity : AppCompatActivity() {
 
     }
 
-    private fun showDetailUserData(detailData: DetailUserResponse?) {
-        Glide.with(this@DetailUserActivity)
-            .load(detailData?.avatarUrl)
-            .apply(RequestOptions().override(180, 180))
-            .into(binding.imgDetailUserPhoto)
-        binding.apply {
-            tvDetailUserName.text = detailData?.name?:getString(R.string.detail_user_noname)
-            tvDetailUserUsername.text = detailData?.login
-            tvDetailUserFollower.text = getString(R.string.detail_user_followers, detailData?.followers)
-            tvDetailUserFollowing.text = getString(R.string.detail_user_following, detailData?.following)
-        }
-    }
+    private fun showDetailUser() {
+        CoroutineScope(Dispatchers.Main).launch{
+            detailUserViewModel.findDetailUser(username).observe(this@DetailUserActivity) { result ->
+                when (result) {
+                    is Result.Loading -> {
+                        binding.progressBarDetailUser.visibility = View.VISIBLE
+                    }
+                    is Result.Success -> {
+                        val detailData = result.data
+                        favUser = FavouriteUser(detailData?.login.toString(), detailData?.avatarUrl)
+                        binding.progressBarDetailUser.visibility = View.GONE
+                        Glide.with(this@DetailUserActivity)
+                            .load(detailData?.avatarUrl)
+                            .apply(RequestOptions().override(180, 180))
+                            .into(binding.imgDetailUserPhoto)
 
-    private fun showLoading(isLoading: Boolean) {
-        binding.layoutMainDetailUser.visibility = if (isLoading) View.GONE else View.VISIBLE
-        binding.progressBarDetailUser.visibility = if (isLoading) View.VISIBLE else View.GONE
+                        binding.apply {
+                            tvDetailUserName.text = detailData?.name?:getString(R.string.detail_user_noname)
+                            tvDetailUserUsername.text = detailData?.login
+                            tvDetailUserFollower.text = getString(R.string.detail_user_followers, detailData?.followers)
+                            tvDetailUserFollowing.text = getString(R.string.detail_user_following, detailData?.following)
+                        }
+                    }
+                    is Result.Error -> {
+                        binding.progressBarDetailUser.visibility = View.GONE
+                        Toast.makeText(this@DetailUserActivity, result.message, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+
     }
 
     private fun setFabIcon(isFavourite: Boolean) {

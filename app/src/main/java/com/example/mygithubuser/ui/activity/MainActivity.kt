@@ -14,14 +14,18 @@ import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mygithubuser.R
-import com.example.mygithubuser.data.remote.response.ItemsItem
 import com.example.mygithubuser.databinding.ActivityMainBinding
 import com.example.mygithubuser.ui.adapter.UserAdapter
 import com.example.mygithubuser.ui.viewmodel.MainViewModel
 import com.example.mygithubuser.ui.viewmodel.ViewModelFactory
+import com.example.mygithubuser.data.Result
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private lateinit var userAdapter: UserAdapter
     private val mainViewModel:MainViewModel by viewModels{
         ViewModelFactory.getInstance(application)
     }
@@ -31,22 +35,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val layoutManager = LinearLayoutManager(this)
-        binding.rvUsers.layoutManager = layoutManager
-        val itemDecoration = DividerItemDecoration(this, layoutManager.orientation)
-        binding.rvUsers.addItemDecoration(itemDecoration)
-
-        mainViewModel.listUser.observe(this) { userData ->
-            setUserData(userData)
-        }
-        mainViewModel.isLoading.observe(this) {
-            showLoading(it)
-        }
-        mainViewModel.toastMessage.observe(this) {
-            it.getContentIfNotHandled()?.let { toastMessage ->
-                Toast.makeText(this@MainActivity, toastMessage, Toast.LENGTH_SHORT).show()
-            }
-        }
+        userAdapter = UserAdapter()
+        showRecyclerView()
+        showUsers(getString(R.string.search_default))
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -59,12 +50,12 @@ class MainActivity : AppCompatActivity() {
         searchView.queryHint = resources.getString(R.string.search_hint)
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
+                showUsers(query)
                 searchView.clearFocus()
                 return true
             }
 
             override fun onQueryTextChange(query: String): Boolean {
-                mainViewModel.findUsers(query)
                 return false
             }
         })
@@ -86,22 +77,35 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setUserData(listUser: List<ItemsItem>) {
-        val adapter = UserAdapter(listUser)
-        binding.rvUsers.adapter = adapter
-
-        adapter.setOnItemClickCallback(object : UserAdapter.OnItemClickCallback {
-            override fun onItemClicked(username: String) {
-                showSelectedUser(username)
+    private fun showUsers(keyword: String) {
+        CoroutineScope(Dispatchers.Main).launch{
+            mainViewModel.findUsers(keyword).observe(this@MainActivity) { result ->
+                when (result) {
+                    is Result.Loading -> {
+                        binding.progressBarUsers.visibility = View.VISIBLE
+                    }
+                    is Result.Success -> {
+                        binding.progressBarUsers.visibility = View.GONE
+                        val usersData = result.data
+                        userAdapter.submitList(usersData)
+                    }
+                    is Result.Error -> {
+                        binding.progressBarUsers.visibility = View.GONE
+                        Toast.makeText(this@MainActivity, result.message, Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
-        })
+        }
     }
 
-    private fun showSelectedUser(username: String) {
-        val moveToDetailIntent = Intent(this@MainActivity, DetailUserActivity::class.java)
-        moveToDetailIntent.putExtra(DetailUserActivity.EXTRA_USERNAME, username)
-
-        startActivity(moveToDetailIntent)
+    private fun showRecyclerView() {
+        val layoutManager = LinearLayoutManager(this)
+        binding.rvUsers.layoutManager = layoutManager
+        binding.rvUsers.apply {
+            visibility = View.VISIBLE
+            adapter = userAdapter
+            addItemDecoration(DividerItemDecoration(this@MainActivity, layoutManager.orientation))
+        }
     }
 
     private fun showFavourites() {
@@ -114,7 +118,4 @@ class MainActivity : AppCompatActivity() {
         startActivity(moveToSettingIntent)
     }
 
-    private fun showLoading(isLoading: Boolean) {
-        binding.progressBarUsers.visibility = if (isLoading) View.VISIBLE else View.GONE
-    }
 }

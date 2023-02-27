@@ -2,6 +2,7 @@
     <string name="app_name">Github User</string>
     <string name="user_username">Username</string>
     <string name="search">Cari</string>
+    <string name="search_default">irham3</string>
     <string name="search_hint">Masukkan Username Github</string>
     <string name="detail_user_title">Detail User Github</string>
     <string name="detail_user_name">Nama Lengkap</string>

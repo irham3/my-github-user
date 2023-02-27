@@ -4,10 +4,14 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.mygithubuser.data.FavouriteUserRepository
+import com.example.mygithubuser.data.UserRepository
 import com.example.mygithubuser.data.local.SettingPreferences
 import com.example.mygithubuser.di.Injection
 
-class ViewModelFactory private constructor(private val favUserRepository: FavouriteUserRepository, private val pref:SettingPreferences)
+class ViewModelFactory private constructor(
+    private val favUserRepository: FavouriteUserRepository,
+    private val userRepository: UserRepository,
+    private val pref:SettingPreferences)
     : ViewModelProvider.NewInstanceFactory() {
 
     @Suppress("UNCHECKED_CAST")
@@ -15,9 +19,9 @@ class ViewModelFactory private constructor(private val favUserRepository: Favour
         if (modelClass.isAssignableFrom(FavouriteUserViewModel::class.java)) {
             return FavouriteUserViewModel(favUserRepository) as T
         } else if (modelClass.isAssignableFrom(DetailUserViewModel::class.java)) {
-            return DetailUserViewModel(favUserRepository) as T
+            return DetailUserViewModel(favUserRepository,userRepository) as T
         } else if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-            return MainViewModel() as T
+            return MainViewModel(userRepository) as T
         } else if (modelClass.isAssignableFrom(SettingViewModel::class.java)) {
             return SettingViewModel(pref) as T
         }
@@ -30,7 +34,8 @@ class ViewModelFactory private constructor(private val favUserRepository: Favour
         private var instance: ViewModelFactory? = null
         fun getInstance(context: Context): ViewModelFactory =
             instance ?: synchronized(this) {
-                instance ?: ViewModelFactory(Injection.provideRepository(context),
+                instance ?: ViewModelFactory(Injection.provideFavUserRepository(context),
+                    Injection.provideUserRepository(),
                     Injection.provideSettingPreference(context))
             }.also { instance = it }
     }

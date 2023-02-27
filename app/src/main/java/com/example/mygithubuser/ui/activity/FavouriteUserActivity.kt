@@ -1,6 +1,5 @@
 package com.example.mygithubuser.ui.activity
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -40,19 +39,9 @@ class FavouriteUserActivity : AppCompatActivity() {
             items.add(item)
         }
 
-        val adapter = UserAdapter(items)
+        val adapter = UserAdapter()
         binding.rvFavUsers.adapter = adapter
-        adapter.setOnItemClickCallback(object : UserAdapter.OnItemClickCallback {
-            override fun onItemClicked(username: String) {
-                showSelectedUser(username)
-            }
-        })
+
     }
 
-    private fun showSelectedUser(username: String) {
-        val moveToDetailIntent = Intent(this@FavouriteUserActivity, DetailUserActivity::class.java)
-        moveToDetailIntent.putExtra(DetailUserActivity.EXTRA_USERNAME, username)
-
-        startActivity(moveToDetailIntent)
-    }
 }

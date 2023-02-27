@@ -26,12 +26,12 @@ class SettingPreferences private constructor(private val dataStore: DataStore<Pr
     companion object {
         const val THEME_SETTING = "theme_setting"
         @Volatile
-        private var INSTANCE: SettingPreferences? = null
+        private var instance: SettingPreferences? = null
 
         fun getInstance(dataStore: DataStore<Preferences>): SettingPreferences {
-            return INSTANCE ?: synchronized(this) {
+            return instance ?: synchronized(this) {
                 val instance = SettingPreferences(dataStore)
-                INSTANCE = instance
+                this.instance = instance
                 instance
             }
         }
