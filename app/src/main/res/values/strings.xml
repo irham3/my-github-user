@@ -5,6 +5,7 @@
     <string name="search_hint">Masukkan Username Github</string>
     <string name="detail_user_title">Detail User Github</string>
     <string name="detail_user_name">Nama Lengkap</string>
+    <string name="detail_user_noname">Tidak Ada Nama</string>
     <string name="detail_user_username">Username</string>
     <string name="detail_user_followers">%1$d Followers</string>
     <string name="detail_user_following">%1$d Following</string>

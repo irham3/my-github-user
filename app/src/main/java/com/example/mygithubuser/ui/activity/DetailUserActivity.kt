@@ -80,12 +80,12 @@ class DetailUserActivity : AppCompatActivity() {
             .load(detailData?.avatarUrl)
             .apply(RequestOptions().override(180, 180))
             .into(binding.imgDetailUserPhoto)
-        binding.tvDetailUserName.text = detailData?.name?:"Tidak Ada Nama"
-        binding.tvDetailUserUsername.text = detailData?.login
-        binding.tvDetailUserFollower.text =
-            getString(R.string.detail_user_followers, detailData?.followers)
-        binding.tvDetailUserFollowing.text =
-            getString(R.string.detail_user_following, detailData?.following)
+        binding.apply {
+            tvDetailUserName.text = detailData?.name?:getString(R.string.detail_user_noname)
+            tvDetailUserUsername.text = detailData?.login
+            tvDetailUserFollower.text = getString(R.string.detail_user_followers, detailData?.followers)
+            tvDetailUserFollowing.text = getString(R.string.detail_user_following, detailData?.following)
+        }
     }
 
     private fun showLoading(isLoading: Boolean) {
