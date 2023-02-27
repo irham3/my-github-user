@@ -5,7 +5,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -56,7 +55,7 @@ class UserFollowFragment : Fragment() {
                         }
                         is Result.Error -> {
                             binding.progressBarDetailFragmentUser.visibility = View.GONE
-                            Toast.makeText(requireActivity(), result.message, Toast.LENGTH_LONG).show()
+                            binding.tvErrorMessage.text = result.message
                         }
                     }
                 }
@@ -77,7 +76,7 @@ class UserFollowFragment : Fragment() {
                         }
                         is Result.Error -> {
                             binding.progressBarDetailFragmentUser.visibility = View.GONE
-                            Toast.makeText(requireActivity(), result.message, Toast.LENGTH_LONG).show()
+                            binding.tvErrorMessage.text = result.message
                         }
                     }
                 }

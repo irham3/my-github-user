@@ -2,7 +2,9 @@ package com.example.mygithubuser.ui.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.activity.viewModels
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mygithubuser.R
 import com.example.mygithubuser.data.local.entity.FavouriteUser
@@ -17,6 +19,7 @@ class FavouriteUserActivity : AppCompatActivity() {
     private val favouriteUserViewModel: FavouriteUserViewModel by viewModels {
         ViewModelFactory.getInstance(application)
     }
+    private lateinit var userAdapter: UserAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,24 +27,28 @@ class FavouriteUserActivity : AppCompatActivity() {
         setContentView(binding.root)
         supportActionBar?.title = getString(R.string.favourite_users_title)
 
-        val layoutManager = LinearLayoutManager(this)
-        binding.rvFavUsers.layoutManager = layoutManager
-
         favouriteUserViewModel.getAllFavourites().observe(this) { userList: List<FavouriteUser> ->
             showFavouriteUsers(userList)
         }
     }
 
-    private fun showFavouriteUsers(userList: List<FavouriteUser>) {
-        val items = arrayListOf<ItemsItem>()
-        userList.map {
+    private fun showFavouriteUsers(userFavList: List<FavouriteUser>) {
+        val userList = arrayListOf<ItemsItem>()
+        userFavList.map {
             val item = ItemsItem(login = it.username, avatarUrl = it.avatarUrl)
-            items.add(item)
+            userList.add(item)
         }
 
-        val adapter = UserAdapter()
-        binding.rvFavUsers.adapter = adapter
+        userAdapter = UserAdapter()
+        userAdapter.submitList(userList)
 
+        val layoutManager = LinearLayoutManager(this)
+        binding.rvFavUsers.layoutManager = layoutManager
+        binding.rvFavUsers.apply {
+            visibility = View.VISIBLE
+            adapter = userAdapter
+            addItemDecoration(DividerItemDecoration(this@FavouriteUserActivity, layoutManager.orientation))
+        }
     }
 
 }
