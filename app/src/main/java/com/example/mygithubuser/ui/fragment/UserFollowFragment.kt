@@ -60,7 +60,6 @@ class UserFollowFragment : Fragment() {
                     }
                 }
             }
-
         } else if(position == 2) {
             // Following Tab
             CoroutineScope(Dispatchers.Main).launch {

@@ -2,6 +2,7 @@ package com.example.mygithubuser.ui.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -25,7 +26,6 @@ class DetailUserActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailUserBinding
     private lateinit var favUser: FavouriteUser
     private lateinit var username: String
-    private var isFavourite = false
     private val detailUserViewModel: DetailUserViewModel by viewModels {
         ViewModelFactory.getInstance(application)
     }
@@ -39,19 +39,9 @@ class DetailUserActivity : AppCompatActivity() {
         username = intent.getStringExtra(EXTRA_USERNAME).toString()
 
         showDetailUser()
+        setFabIcon()
 
-        detailUserViewModel.getFavouriteByUsername(username).observe(this@DetailUserActivity) { listFavUser ->
-            isFavourite = listFavUser.isNotEmpty()
-            setFabIcon(isFavourite)
-            binding.fabAddToFavourites.setOnClickListener {
-                if(isFavourite)
-                    detailUserViewModel.removeFromFavourites(favUser)
-                else
-                    detailUserViewModel.addToFavourites(favUser)
-            }
-        }
-
-
+        // Menambahkan viewpager
         val sectionsPagerAdapter = SectionsPagerAdapter(this)
         sectionsPagerAdapter.username = username
         binding.viewPager.adapter = sectionsPagerAdapter
@@ -60,6 +50,16 @@ class DetailUserActivity : AppCompatActivity() {
             tab.text = resources.getString(TAB_TITLES[position])
         }.attach()
 
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressedDispatcher.onBackPressed()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun showDetailUser() {
@@ -95,13 +95,26 @@ class DetailUserActivity : AppCompatActivity() {
 
     }
 
-    private fun setFabIcon(isFavourite: Boolean) {
-        if (isFavourite) {
-            binding.fabAddToFavourites.setImageDrawable(ContextCompat
-                .getDrawable(binding.fabAddToFavourites.context, R.drawable.ic_favorite_24))
-        } else {
-            binding.fabAddToFavourites.setImageDrawable(ContextCompat
-                .getDrawable(binding.fabAddToFavourites.context, R.drawable.ic_favorite_border_24))
+    private fun setFabIcon() {
+        detailUserViewModel.getFavouriteByUsername(username).observe(this@DetailUserActivity) { listFavUser ->
+            val isFavourite = listFavUser.isNotEmpty()
+
+            // Menentukan Icon Fab
+            if (isFavourite) {
+                binding.fabAddToFavourites.setImageDrawable(ContextCompat
+                    .getDrawable(binding.fabAddToFavourites.context, R.drawable.ic_favorite_24))
+            } else {
+                binding.fabAddToFavourites.setImageDrawable(ContextCompat
+                    .getDrawable(binding.fabAddToFavourites.context, R.drawable.ic_favorite_border_24))
+            }
+
+            // Menentukan fungsi ketika diklik (menghapus atau menambah)
+            binding.fabAddToFavourites.setOnClickListener {
+                if(isFavourite)
+                    detailUserViewModel.removeFromFavourites(favUser)
+                else
+                    detailUserViewModel.addToFavourites(favUser)
+            }
         }
     }
 

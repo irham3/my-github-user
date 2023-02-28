@@ -25,14 +25,17 @@
         <activity
             android:name=".ui.activity.FavouriteUserActivity"
             android:exported="false"
+            android:parentActivityName=".ui.activity.MainActivity"
             android:theme="@style/Theme.MyGithubUser"/>
         <activity
             android:name=".ui.activity.DetailUserActivity"
             android:exported="false"
+            android:parentActivityName=".ui.activity.MainActivity"
             android:theme="@style/Theme.MyGithubUser"/>
         <activity
             android:name=".ui.activity.SettingActivity"
             android:exported="false"
+            android:parentActivityName=".ui.activity.MainActivity"
             android:theme="@style/Theme.MyGithubUser"/>
     </application>
 

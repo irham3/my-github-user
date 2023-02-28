@@ -35,7 +35,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        userAdapter = UserAdapter()
         showRecyclerView()
         showUsers(getString(R.string.search_default))
     }
@@ -100,6 +99,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun showRecyclerView() {
         val layoutManager = LinearLayoutManager(this)
+        userAdapter = UserAdapter()
         binding.rvUsers.layoutManager = layoutManager
         binding.rvUsers.apply {
             visibility = View.VISIBLE

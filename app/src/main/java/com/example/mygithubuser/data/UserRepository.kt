@@ -10,7 +10,6 @@ import kotlinx.coroutines.*
 class UserRepository private constructor(
     private val apiService: ApiService,
 ) {
-    private var job: Job? = null
 
     suspend fun findUsers(keyword: String): LiveData<Result<List<ItemsItem>>> {
         val listUser = MutableLiveData<Result<List<ItemsItem>>>()
@@ -21,7 +20,7 @@ class UserRepository private constructor(
         listUser.postValue(Result.Loading())
 
         // Ambil data dari API menggunakan Kotlin Coroutine
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val response = apiService.getListUsers(keyword)
             if (response.isSuccessful) {
                 if (response.body()?.items.isNullOrEmpty()) {
@@ -53,7 +52,7 @@ class UserRepository private constructor(
         detailUser.postValue(Result.Loading())
 
         // Ambil data Detail User dari API menggunakan Kotlin Coroutine
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val response = apiService.getDetailUser(username)
             if (response.isSuccessful) {
                 detailUser.postValue(Result.Success(response.body()))
@@ -80,7 +79,7 @@ class UserRepository private constructor(
         listUser.postValue(Result.Loading())
 
         // Ambil data dari API menggunakan Kotlin Coroutine
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val response = apiService.getFollowing(username)
             if (response.isSuccessful) {
                 if (response.body().isNullOrEmpty()) {
@@ -101,6 +100,7 @@ class UserRepository private constructor(
         }
         return listUser
     }
+
     suspend fun getFollowers(username: String): LiveData<Result<List<ItemsItem>>> {
         val listUser = MutableLiveData<Result<List<ItemsItem>>>()
         val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
@@ -110,7 +110,7 @@ class UserRepository private constructor(
         listUser.postValue(Result.Loading())
 
         // Ambil data dari API menggunakan Kotlin Coroutine
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val response = apiService.getFollowers(username)
             if (response.isSuccessful) {
                 if (response.body().isNullOrEmpty()) {
@@ -131,8 +131,6 @@ class UserRepository private constructor(
         }
         return listUser
     }
-
-
 
     companion object {
         @Volatile

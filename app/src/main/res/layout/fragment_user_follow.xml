@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:padding="16dp"
         android:overScrollMode="never"
+        tools:listitem="@layout/item_user"
         android:scrollbarSize="0dp"/>
 
     <ProgressBar

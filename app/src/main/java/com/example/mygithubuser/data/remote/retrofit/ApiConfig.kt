@@ -16,9 +16,11 @@ class ApiConfig {
                     .build()
                 chain.proceed(requestHeaders)
             }
+
             val client = OkHttpClient.Builder()
                 .addInterceptor(authInterceptor)
                 .build()
+
             val retrofit = Retrofit.Builder()
                 .baseUrl(BuildConfig.GITHUB_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())

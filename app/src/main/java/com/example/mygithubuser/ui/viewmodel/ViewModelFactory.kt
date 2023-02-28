@@ -16,17 +16,17 @@ class ViewModelFactory private constructor(
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(FavouriteUserViewModel::class.java)) {
-            return FavouriteUserViewModel(favUserRepository) as T
-        } else if (modelClass.isAssignableFrom(DetailUserViewModel::class.java)) {
-            return DetailUserViewModel(favUserRepository,userRepository) as T
-        } else if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-            return MainViewModel(userRepository) as T
-        } else if (modelClass.isAssignableFrom(SettingViewModel::class.java)) {
-            return SettingViewModel(pref) as T
+        return when {
+            modelClass.isAssignableFrom(FavouriteUserViewModel::class.java)
+                -> FavouriteUserViewModel(favUserRepository) as T
+            modelClass.isAssignableFrom(DetailUserViewModel::class.java)
+                -> DetailUserViewModel(favUserRepository, userRepository) as T
+            modelClass.isAssignableFrom(MainViewModel::class.java)
+                -> MainViewModel(userRepository) as T
+            modelClass.isAssignableFrom(SettingViewModel::class.java)
+                -> SettingViewModel(pref) as T
+            else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
-
-        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
     }
 
     companion object {

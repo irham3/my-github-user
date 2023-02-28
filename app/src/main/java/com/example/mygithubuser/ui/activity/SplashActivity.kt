@@ -13,10 +13,9 @@ import com.example.mygithubuser.ui.viewmodel.ViewModelFactory
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
-
     private val SPLASH_DELAY: Long = 1000
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?)  {
         super.onCreate(savedInstanceState)
 
         Handler(Looper.getMainLooper()).postDelayed({
@@ -29,8 +28,7 @@ class SplashActivity : AppCompatActivity() {
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent)
-        this.finish()
-
+        finish()
     }
 
     private fun checkDarkMode() {

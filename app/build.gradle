@@ -20,7 +20,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "GITHUB_BASE_URL", '"https://api.github.com/"')
-        buildConfigField("String", "GITHUB_API_KEY", '"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"')
+        buildConfigField("String", "GITHUB_API_KEY", '"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"')
     }
 
     buildTypes {
@@ -53,7 +53,6 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.14.2'
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation "com.squareup.retrofit2:converter-gson:2.9.0"
-    implementation "com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.7"
     implementation 'de.hdodenhof:circleimageview:3.1.0'
     implementation "androidx.viewpager2:viewpager2:1.0.0"
 

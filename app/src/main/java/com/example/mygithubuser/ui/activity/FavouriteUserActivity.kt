@@ -2,6 +2,7 @@ package com.example.mygithubuser.ui.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -30,6 +31,16 @@ class FavouriteUserActivity : AppCompatActivity() {
         favouriteUserViewModel.getAllFavourites().observe(this) { userList: List<FavouriteUser> ->
             showFavouriteUsers(userList)
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressedDispatcher.onBackPressed()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun showFavouriteUsers(userFavList: List<FavouriteUser>) {
