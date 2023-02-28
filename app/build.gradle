@@ -20,7 +20,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "GITHUB_BASE_URL", '"https://api.github.com/"')
-        buildConfigField("String", "GITHUB_API_KEY", '"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"')
+        buildConfigField("String", "GITHUB_API_KEY", '"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"')
     }
 
     buildTypes {

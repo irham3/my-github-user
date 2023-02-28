@@ -40,9 +40,9 @@ class UserFollowFragment : Fragment() {
         val position = arguments?.getInt(ARG_POSITION, 0)
         val username = arguments?.getString(ARG_USERNAME)
 
-        if (position == 1) {
             // Followers Tab
-            CoroutineScope(Dispatchers.Main).launch {
+        CoroutineScope(Dispatchers.Main).launch {
+            if (position == 1) {
                 detailUserViewModel.findFollowers((username.toString())).observe(viewLifecycleOwner) { result ->
                     when(result) {
                         is Result.Loading -> {
@@ -59,10 +59,7 @@ class UserFollowFragment : Fragment() {
                         }
                     }
                 }
-            }
-        } else if(position == 2) {
-            // Following Tab
-            CoroutineScope(Dispatchers.Main).launch {
+            } else if (position == 2) {
                 detailUserViewModel.findFollowing((username.toString())).observe(viewLifecycleOwner) { result ->
                     when(result) {
                         is Result.Loading -> {

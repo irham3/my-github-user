@@ -96,8 +96,8 @@ class DetailUserActivity : AppCompatActivity() {
     }
 
     private fun setFabIcon() {
-        detailUserViewModel.getFavouriteByUsername(username).observe(this@DetailUserActivity) { listFavUser ->
-            val isFavourite = listFavUser.isNotEmpty()
+        detailUserViewModel.getFavouriteByUsername(username).observe(this@DetailUserActivity) { favUserData ->
+            val isFavourite = favUserData != null
 
             // Menentukan Icon Fab
             if (isFavourite) {

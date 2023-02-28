@@ -10,7 +10,7 @@ class FavouriteUserRepository private constructor(
 
     fun getAllFavourites(): LiveData<List<FavouriteUser>> = mFavUsersDao.getAllFavourites()
 
-    fun getFavoriteUserByUsername(username: String): LiveData<List<FavouriteUser>>
+    fun getFavoriteUserByUsername(username: String): LiveData<FavouriteUser?>
         = mFavUsersDao.getFavoriteUserByUsername(username)
 
     suspend fun addToFavourites(favouriteUser: FavouriteUser) {

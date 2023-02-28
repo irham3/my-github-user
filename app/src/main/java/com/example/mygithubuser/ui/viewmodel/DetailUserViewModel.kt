@@ -27,7 +27,7 @@ class DetailUserViewModel(
         favUserRepository.removeFromFavourites(favUsers)
     }
 
-    fun getFavouriteByUsername(username: String): LiveData<List<FavouriteUser>> =
+    fun getFavouriteByUsername(username: String): LiveData<FavouriteUser?> =
         favUserRepository.getFavoriteUserByUsername(username)
 
 }
